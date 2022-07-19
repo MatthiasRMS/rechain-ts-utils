@@ -1,6 +1,6 @@
 {
   "name": "rechain-ts-utils",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "devDependencies": {
     "typescript": "^4.7.4"
   },
