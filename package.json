@@ -5,6 +5,7 @@
     "typescript": "^4.7.4"
   },
   "main": "./api/index.ts",
+  "module": "./api/index.ts",
   "types": "types/main.d.ts",
   "files": [
     "api/*",
