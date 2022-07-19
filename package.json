@@ -1,11 +1,17 @@
 {
   "name": "rechain-ts-utils",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "devDependencies": {
     "typescript": "^4.7.4"
   },
   "main": "./api/index.ts",
   "module": "./api/index.ts",
+  "exports": {
+    ".": {
+      "import": "./api/index.ts",
+      "require": "./api/index.ts"
+    }
+  },
   "types": "types/main.d.ts",
   "files": [
     "api/*",
