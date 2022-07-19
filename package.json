@@ -8,5 +8,9 @@
   "files": [
     "dist/*",
     "types/*"
-  ]
+  ],
+  "dependencies": {
+    "@ionic/storage": "^3.0.6",
+    "ohmyfetch": "^0.4.18"
+  }
 }
