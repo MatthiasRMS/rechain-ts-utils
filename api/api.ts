@@ -1,12 +1,5 @@
-// import { useCookies } from '@vueuse/integrations/useCookies';
 import { Storage } from "@ionic/storage";
-import {
-  $fetch,
-  $Fetch,
-  FetchOptions,
-  FetchContext,
-  SearchParams,
-} from "ohmyfetch";
+import { $fetch, $Fetch, FetchOptions, SearchParams } from "ohmyfetch";
 
 export interface ApiFetch {
   $get<T>(
@@ -33,60 +26,81 @@ export interface ApiFetch {
   v1: Omit<ApiFetch, "v1">;
 }
 
-export const useApi = (baseURL: string): ApiFetch => {
-  async function getJwt() {
-    const storage = new Storage();
-    await storage.create();
-    const jwt = await storage.get("token");
-    return jwt;
-  }
-  // const authCookies = useCookies(['token']);
-  // const { public: config } = useRuntimeConfig();
-  const jwt = getJwt();
-  const apiFetch = $fetch.create({
-    baseURL,
-    headers: {
-      Accept: "application/json, text/plain, */*",
-    },
-    onRequest({ request, options }) {
-      if (jwt) {
-        (
-          options.headers as Record<string, string>
-        ).Authorization = `Bearer ${jwt}`;
-      }
+export default class Api {
+  useApi = (baseURL: string): ApiFetch => {
+    async function getJwt() {
+      const storage = new Storage();
+      await storage.create();
+      const jwt = await storage.get("token");
+      return jwt;
+    }
+    // const authCookies = useCookies(['token']);
+    // const { public: config } = useRuntimeConfig();
+    const jwt = getJwt();
+    const apiFetch = $fetch.create({
+      baseURL,
+      headers: {
+        Accept: "application/json, text/plain, */*",
+      },
+      onRequest({ request, options }) {
+        if (jwt) {
+          (
+            options.headers as Record<string, string>
+          ).Authorization = `Bearer ${jwt}`;
+        }
 
-      paramsSerializer(options.params);
+        paramsSerializer(options.params);
 
-      return Promise.resolve();
-    },
-  });
+        return Promise.resolve();
+      },
+    });
 
-  function getApi(basePath = "") {
+    function getApi(apiVersion: string = "") {
+      return {
+        $request: apiFetch,
+        $get<T>(url: string, options?: Omit<FetchOptions<"json">, "method">) {
+          return apiFetch<T>(url, {
+            baseURL: `baseURL${apiVersion}`,
+            ...options,
+            method: "GET",
+          });
+        },
+        $post<T>(url: string, options?: Omit<FetchOptions<"json">, "method">) {
+          return apiFetch<T>(url, {
+            baseURL: `baseURL${apiVersion}`,
+            ...options,
+            method: "POST",
+          });
+        },
+        $put<T>(url: string, options?: Omit<FetchOptions<"json">, "method">) {
+          return apiFetch<T>(url, {
+            baseURL: `baseURL${apiVersion}`,
+            ...options,
+            method: "PUT",
+          });
+        },
+        $patch<T>(url: string, options?: Omit<FetchOptions<"json">, "method">) {
+          return apiFetch<T>(url, {
+            baseURL: `baseURL${apiVersion}`,
+            ...options,
+            method: "PATCH",
+          });
+        },
+        $delete<T>(
+          url: string,
+          options?: Omit<FetchOptions<"json">, "method">
+        ) {
+          return apiFetch<T>(url, { baseURL, ...options, method: "DELETE" });
+        },
+      };
+    }
+
     return {
-      $request: apiFetch,
-      $get<T>(url: string, options?: Omit<FetchOptions<"json">, "method">) {
-        return apiFetch<T>(url, { baseURL, ...options, method: "GET" });
-      },
-      $post<T>(url: string, options?: Omit<FetchOptions<"json">, "method">) {
-        return apiFetch<T>(url, { baseURL, ...options, method: "POST" });
-      },
-      $put<T>(url: string, options?: Omit<FetchOptions<"json">, "method">) {
-        return apiFetch<T>(url, { baseURL, ...options, method: "PUT" });
-      },
-      $patch<T>(url: string, options?: Omit<FetchOptions<"json">, "method">) {
-        return apiFetch<T>(url, { baseURL, ...options, method: "PATCH" });
-      },
-      $delete<T>(url: string, options?: Omit<FetchOptions<"json">, "method">) {
-        return apiFetch<T>(url, { baseURL, ...options, method: "DELETE" });
-      },
+      ...getApi(),
+      v1: getApi("/api/v1"),
     };
-  }
-
-  return {
-    ...getApi(),
-    v1: getApi("/api/v1"),
   };
-};
+}
 
 function paramsSerializer(params?: SearchParams): void {
   if (!params) {
@@ -100,5 +114,3 @@ function paramsSerializer(params?: SearchParams): void {
     }
   });
 }
-
-// export { useUser, useUsers, registerUser } from './users';
