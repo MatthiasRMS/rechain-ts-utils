@@ -1,12 +1,13 @@
 {
   "name": "rechain-ts-utils",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "devDependencies": {
     "typescript": "^4.7.4"
   },
+  "main": "./api/index.ts",
   "types": "types/main.d.ts",
   "files": [
-    "dist/*",
+    "api/*",
     "types/*"
   ],
   "dependencies": {
