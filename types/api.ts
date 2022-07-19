@@ -1,7 +1,6 @@
 // import { useCookies } from '@vueuse/integrations/useCookies';
 import { Storage } from '@ionic/storage';
 import { $fetch, $Fetch, FetchOptions, FetchContext, SearchParams } from 'ohmyfetch';
-import 'dotenv/config';
 
 export interface ApiFetch {
   $get<T>(url: string, options?: Omit<FetchOptions<'json'>, 'method'>): Promise<T>,
@@ -13,14 +12,17 @@ export interface ApiFetch {
   v1: Omit<ApiFetch, 'v1'>,
 }
 
-export const useApi = async (baseURL: string): Promise<ApiFetch> => {
-  const storage = new Storage();
-  await storage.create();
-  const jwt = await storage.get('token');
+export const useApi = (baseURL: string): ApiFetch => {
 
+  async function getJwt() {
+    const storage = new Storage();
+    await storage.create();
+    const jwt = await storage.get('token')
+    return jwt;
+  }
   // const authCookies = useCookies(['token']);
   // const { public: config } = useRuntimeConfig();
-
+  const jwt = getJwt();
   const apiFetch = $fetch.create({
     baseURL,
     headers: {
