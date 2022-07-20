@@ -1,30 +1,32 @@
 import { Storage } from "@ionic/storage";
 import { $fetch, $Fetch, FetchOptions, SearchParams } from "ohmyfetch";
 
+type RequestPayload = {
+  [key: string]: Omit<FetchOptions<"json">, "method">
+}
 export interface ApiFetch {
   $get<T>(
     url: string,
-    options?: Omit<FetchOptions<"json">, "method">
+    options?: Omit<FetchOptions<"json">, "method"> | RequestPayload
   ): Promise<T>;
   $post<T>(
     url: string,
-    options?: Omit<FetchOptions<"json">, "method">
+    options?: Omit<FetchOptions<"json">, "method"> | RequestPayload
   ): Promise<T>;
   $put<T>(
     url: string,
-    options?: Omit<FetchOptions<"json">, "method">
+    options?: Omit<FetchOptions<"json">, "method"> | RequestPayload
   ): Promise<T>;
   $patch<T>(
     url: string,
-    options?: Omit<FetchOptions<"json">, "method">
+    options?: Omit<FetchOptions<"json">, "method"> | RequestPayload
   ): Promise<T>;
   $delete<T>(
     url: string,
-    options?: Omit<FetchOptions<"json">, "method">
+    options?: Omit<FetchOptions<"json">, "method"> | RequestPayload
   ): Promise<T>;
   $request: $Fetch;
   v1: Omit<ApiFetch, "v1">;
-  fetch: any;
 }
 
 export default class Api {

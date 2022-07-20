@@ -1,5 +1,5 @@
 import { Repository } from './repository';
-import { ReviewComment } from '../types/review_comments';
+import { ReviewComment } from '../types/review_comment';
 
 export default class ReviewCommentsRepository extends Repository {
   index(reviewId: number) {
