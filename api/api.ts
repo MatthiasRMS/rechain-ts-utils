@@ -24,6 +24,7 @@ export interface ApiFetch {
   ): Promise<T>;
   $request: $Fetch;
   v1: Omit<ApiFetch, "v1">;
+  fetch: any;
 }
 
 export default class Api {
@@ -36,18 +37,21 @@ export default class Api {
     }
     // const authCookies = useCookies(['token']);
     // const { public: config } = useRuntimeConfig();
-    const jwt = getJwt();
+
     const apiFetch = $fetch.create({
       baseURL,
       headers: {
         Accept: "application/json, text/plain, */*",
       },
-      onRequest({ request, options }) {
-        if (jwt) {
-          (
-            options.headers as Record<string, string>
-          ).Authorization = `Bearer ${jwt}`;
-        }
+      async onRequest({ request, options }) {
+        // if (getJwt()) {
+        const jwt = await getJwt();
+        console.log('JWT');
+        console.log(jwt);
+        (
+          options.headers as Record<string, string>
+        ).Authorization = `Bearer ${jwt}`;
+        // }
 
         paramsSerializer(options.params);
 
@@ -60,28 +64,28 @@ export default class Api {
         $request: apiFetch,
         $get<T>(url: string, options?: Omit<FetchOptions<"json">, "method">) {
           return apiFetch<T>(url, {
-            baseURL: `baseURL${apiVersion}`,
+            baseURL: `${baseURL}/${apiVersion}`,
             ...options,
             method: "GET",
           });
         },
         $post<T>(url: string, options?: Omit<FetchOptions<"json">, "method">) {
           return apiFetch<T>(url, {
-            baseURL: `baseURL${apiVersion}`,
+            baseURL: `${baseURL}/${apiVersion}`,
             ...options,
             method: "POST",
           });
         },
         $put<T>(url: string, options?: Omit<FetchOptions<"json">, "method">) {
           return apiFetch<T>(url, {
-            baseURL: `baseURL${apiVersion}`,
+            baseURL: `${baseURL}/${apiVersion}`,
             ...options,
             method: "PUT",
           });
         },
         $patch<T>(url: string, options?: Omit<FetchOptions<"json">, "method">) {
           return apiFetch<T>(url, {
-            baseURL: `baseURL${apiVersion}`,
+            baseURL: `${baseURL}/${apiVersion}`,
             ...options,
             method: "PATCH",
           });
